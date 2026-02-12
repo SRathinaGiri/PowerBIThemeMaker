@@ -64,8 +64,8 @@
                     <div class="grid grid-cols-2 gap-8 mb-6">
                         <div><label class="block text-[10px] font-bold uppercase mb-1">Mode</label>
                         <select id="baseMode" onchange="setModeDefaults()" class="w-full p-2 border rounded bg-white"><option value="light">Light Theme</option><option value="dark">Dark Theme</option></select></div>
-                        <div><label class="block text-[10px] font-bold uppercase mb-1">Accent</label>
-                        <input type="color" id="primaryColor" value="#1F6FFF" onchange="updateAll()" class="w-full h-10 rounded cursor-pointer"></div>
+                        <div><label class="block text-[10px] font-bold uppercase mb-1 flex justify-between">Accent <span class="flex items-center gap-1 font-normal lowercase text-[9px]"><input type="checkbox" id="autoSync" checked> sync bg/fg</span></label>
+                        <input type="color" id="primaryColor" value="#1F6FFF" onchange="syncThemeFromAccent(); updateAll()" class="w-full h-10 rounded cursor-pointer"></div>
                     </div>
                     <div class="grid grid-cols-5 gap-4 mb-6">
                         <div><label class="block text-[10px] font-bold uppercase mb-1">Good</label>
@@ -131,44 +131,110 @@ let selectedIdx = 0;
 let customColors = []; 
 const statusCols = { good: "#00A36C", neutral: "#FFB000", bad: "#E05656" };
 
-const palettes = [
-    // --- COMPLIMENTARY ---
-    { name: "Blue & Orange", colors: ["#1F6FFF", "#FF9F1C", "#4BA3FF", "#FFBF69", "#0052CC", "#CC7A00", "#99CCFF", "#FFE0B3"] },
-    { name: "Teal & Red", colors: ["#2A9D8F", "#E76F51", "#264653", "#F4A261", "#E9C46A", "#C45B41", "#8AB17D", "#D88C78"] },
-    { name: "Purple & Yellow", colors: ["#7209B7", "#FFD60A", "#3A0CA3", "#FFC300", "#4361EE", "#FFEE32", "#B5179E", "#FFF3B0"] },
-    
-    // --- CONTRAST ---
-    { name: "High Contrast", colors: ["#000000", "#FFD700", "#FF4500", "#1E90FF", "#32CD32", "#8A2BE2", "#FF1493", "#FFFFFF"] },
-    { name: "Vibrant Hub", colors: ["#F72585", "#7209B7", "#3A0CA3", "#4361EE", "#4CC9F0", "#480CA8", "#560BAD", "#B5179E"] },
-    { name: "Neon Lights", colors: ["#FF00FF", "#00FFFF", "#FFFF00", "#00FF00", "#FF0000", "#0000FF", "#FFFFFF", "#808080"] },
+const paletteGroups = {
+    "Power BI Native": [
+        { name: "Default (Cypress)", colors: ["#01B8AA", "#374649", "#FD625E", "#F2C80F", "#5F6B6D", "#8AD4EB", "#FE9666", "#A66999"] },
+        { name: "City Park", colors: ["#73B761", "#4A588A", "#ECC846", "#CD4C46", "#71AFE2", "#8D6FD1", "#EE9E64", "#95DABB"] },
+        { name: "Classroom", colors: ["#4A8DDC", "#4C5D8A", "#F3C911", "#DC5B57", "#33AE81", "#95C8F0", "#DD915F", "#9A64A0"] },
+        { name: "Colorblind Safe", colors: ["#074650", "#009292", "#FE6DB6", "#FEB5DA", "#480091", "#B66DFF", "#B5DAFE", "#6DB6FF"] },
+        { name: "Electric", colors: ["#118DFF", "#750985", "#C83D95", "#FF985E", "#1DD5EE", "#42F7C0", "#3049AD", "#F64F5C"] },
+        { name: "High Contrast", colors: ["#107C10", "#002050", "#A80000", "#5C2D91", "#004B50", "#0078D7", "#D83B01", "#B4009E"] },
+        { name: "Sunset", colors: ["#B6B0FF", "#3049AD", "#FF994E", "#C83D95", "#FFBBED", "#42F9F9", "#00B2D9", "#FFD86C"] },
+        { name: "Twilight", colors: ["#F17925", "#004753", "#CCAA14", "#4B4C4E", "#D82C20", "#A3D0D4", "#536F18", "#46ABB0"] }
+    ],
+    "Cool": [
+        { name: "Nordic Teal", colors: ["#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#21867A", "#D1A142", "#C45B41"] },
+        { name: "Oceanic", colors: ["#005F73", "#0A9396", "#94D2BD", "#E9D8A6", "#EE9B00", "#CA6702", "#BB3E03", "#AE2012"] },
+        { name: "Midnight", colors: ["#3D5A80", "#98C1D9", "#E0FBFC", "#EE6C4D", "#293241", "#566E8D", "#778DA9", "#1B263B"] },
+        { name: "Winter Blue", colors: ["#0077B6", "#0096C7", "#00B4D8", "#48CAE4", "#90E0EF", "#ADE8F4", "#CAF0F8", "#EDF6F9"] }
+    ],
+    "Warm": [
+        { name: "Sunset Drive", colors: ["#F94144", "#F3722C", "#F8961E", "#F9844A", "#F9C74F", "#90BE6D", "#43AA8B", "#4D908E"] },
+        { name: "Autumn Leaves", colors: ["#D62828", "#F77F00", "#FCBF49", "#EAE2B7", "#A4161A", "#BA181B", "#E5383B", "#F5CB5C"] },
+        { name: "Desert Sand", colors: ["#A47148", "#BC8A5F", "#DDA15E", "#E9C46A", "#F4A261", "#E76F51", "#C45B41", "#BB3E03"] }
+    ],
+    "Contrast": [
+        { name: "High Contrast", colors: ["#000000", "#FFD700", "#FF4500", "#1E90FF", "#32CD32", "#8A2BE2", "#FF1493", "#FFFFFF"] },
+        { name: "Vibrant Hub", colors: ["#F72585", "#7209B7", "#3A0CA3", "#4361EE", "#4CC9F0", "#480CA8", "#560BAD", "#B5179E"] },
+        { name: "Neon Lights", colors: ["#FF00FF", "#00FFFF", "#FFFF00", "#00FF00", "#FF0000", "#0000FF", "#FFFFFF", "#808080"] }
+    ],
+    "Modern": [
+        { name: "Slate Grey", colors: ["#212529", "#343A40", "#495057", "#6C757D", "#ADB5BD", "#CED4DA", "#DEE2E6", "#F8F9FA"] },
+        { name: "Tailwind Blues", colors: ["#1E3A8A", "#1D4ED8", "#2563EB", "#3B82F6", "#60A5FA", "#93C5FD", "#BFDBFE", "#DBEAFE"] },
+        { name: "Dracula", colors: ["#282A36", "#44475A", "#F8F8F2", "#6272A4", "#8BE9FD", "#50FA7B", "#FFB86C", "#FF79C6"] }
+    ],
+    "Gradient (2 Colors)": [
+        { name: "Blue to Red", colors: generateGradient(["#0000FF", "#FF0000"], 8) },
+        { name: "Purple to Green", colors: generateGradient(["#800080", "#008000"], 8) },
+        { name: "Orange to Cyan", colors: generateGradient(["#FFA500", "#00FFFF"], 8) },
+        { name: "Deep Sea", colors: generateGradient(["#0f2027", "#2c5364"], 8) }
+    ],
+    "Gradient (3 Colors)": [
+        { name: "Thermal", colors: generateGradient(["#0000FF", "#FFFFFF", "#FF0000"], 8) },
+        { name: "Traffic", colors: generateGradient(["#00FF00", "#FFFF00", "#FF0000"], 8) },
+        { name: "Sunset", colors: generateGradient(["#2c3e50", "#fd746c", "#ff9068"], 8) }
+    ],
+    "Single Color": [
+        { name: "Blue Scale", colors: generateGradient(["#000050", "#add8e6"], 8) },
+        { name: "Red Scale", colors: generateGradient(["#500000", "#ffcccb"], 8) },
+        { name: "Green Scale", colors: generateGradient(["#004000", "#90ee90"], 8) },
+        { name: "Grey Scale", colors: generateGradient(["#202020", "#e0e0e0"], 8) }
+    ]
+};
 
-    // --- WARM ---
-    { name: "Sunset Drive", colors: ["#F94144", "#F3722C", "#F8961E", "#F9844A", "#F9C74F", "#90BE6D", "#43AA8B", "#4D908E"] },
-    { name: "Autumn Leaves", colors: ["#D62828", "#F77F00", "#FCBF49", "#EAE2B7", "#A4161A", "#BA181B", "#E5383B", "#F5CB5C"] },
-    { name: "Desert Sand", colors: ["#A47148", "#BC8A5F", "#DDA15E", "#E9C46A", "#F4A261", "#E76F51", "#C45B41", "#BB3E03"] },
+const palettes = Object.values(paletteGroups).flat();
 
-    // --- COOL ---
-    { name: "Nordic Teal", colors: ["#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#21867A", "#D1A142", "#C45B41"] },
-    { name: "Oceanic", colors: ["#005F73", "#0A9396", "#94D2BD", "#E9D8A6", "#EE9B00", "#CA6702", "#BB3E03", "#AE2012"] },
-    { name: "Midnight", colors: ["#3D5A80", "#98C1D9", "#E0FBFC", "#EE6C4D", "#293241", "#566E8D", "#778DA9", "#1B263B"] },
-    { name: "Winter Blue", colors: ["#0077B6", "#0096C7", "#00B4D8", "#48CAE4", "#90E0EF", "#ADE8F4", "#CAF0F8", "#EDF6F9"] },
+function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return { r, g, b };
+}
 
-    // --- MONOCHROMATIC ---
-    { name: "Corporate Blue", colors: ["#0D47A1", "#1565C0", "#1976D2", "#1E88E5", "#2196F3", "#42A5F5", "#64B5F6", "#90CAF9"] },
-    { name: "Eco Green", colors: ["#004B23", "#007200", "#008000", "#38B000", "#70E000", "#9EF01A", "#CCFF33", "#004B23"] },
-    { name: "Royal Purple", colors: ["#240046", "#3C096C", "#5A189A", "#7B2CBF", "#9D4EDD", "#C77DFF", "#E0AAFF", "#F3C4FB"] },
-    { name: "Slate Grey", colors: ["#212529", "#343A40", "#495057", "#6C757D", "#ADB5BD", "#CED4DA", "#DEE2E6", "#F8F9FA"] },
+function rgbToHex(r, g, b) {
+    return "#" + [r, g, b].map(x => {
+        const hex = Math.round(x).toString(16).padStart(2, '0');
+        return hex;
+    }).join('').toUpperCase();
+}
 
-    // --- GRADIENT/DIVERGING ---
-    { name: "Heatmap", colors: ["#D73027", "#F46D43", "#FDAE61", "#FEE08B", "#D9EF8B", "#66BD63", "#1A9850", "#006837"] },
-    { name: "Red to Blue", colors: ["#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC"] },
-    { name: "Spectral", colors: ["#9E0142", "#D53E4F", "#F46D43", "#FDAE61", "#FEE08B", "#FFFFBF", "#E6F598", "#ABDDA4"] },
+function adjustBrightness(hex, percent) {
+    const { r, g, b } = hexToRgb(hex);
+    const amount = Math.floor(255 * (percent / 100));
+    const newR = Math.max(0, Math.min(255, r + amount));
+    const newG = Math.max(0, Math.min(255, g + amount));
+    const newB = Math.max(0, Math.min(255, b + amount));
+    return rgbToHex(newR, newG, newB);
+}
 
-    // --- OTHER ---
-    { name: "Pastel", colors: ["#BDE0FE", "#A2D2FF", "#FFC8DD", "#FFAFCC", "#CDB4DB", "#E2ECE9", "#DFE7FD", "#F0EFEB"] },
-    { name: "Financial", colors: ["#BC6C25", "#DDA15E", "#FEFAE0", "#606C38", "#283618", "#8B5E34", "#A47148", "#BC8A5F"] },
-    { name: "Excel Classic", colors: ["#217346", "#439467", "#84C4A1", "#C7E5D6", "#107C10", "#2B5797", "#E06666", "#F6B26B"] }
-];
+function interpolateColor(color1, color2, factor) {
+    const c1 = hexToRgb(color1);
+    const c2 = hexToRgb(color2);
+    const r = c1.r + factor * (c2.r - c1.r);
+    const g = c1.g + factor * (c2.g - c1.g);
+    const b = c1.b + factor * (c2.b - c1.b);
+    return rgbToHex(r, g, b);
+}
+
+function generateGradient(colors, steps) {
+    const gradient = [];
+    if (colors.length < 2) return colors;
+
+    if (colors.length === 2) {
+        for (let i = 0; i < steps; i++) {
+            gradient.push(interpolateColor(colors[0], colors[1], i / (steps - 1)));
+        }
+    } else if (colors.length === 3) {
+        const half = Math.floor(steps / 2);
+        for (let i = 0; i < half; i++) {
+            gradient.push(interpolateColor(colors[0], colors[1], i / (half - 1)));
+        }
+        for (let i = 0; i < (steps - half); i++) {
+            gradient.push(interpolateColor(colors[1], colors[2], i / ((steps - half) - 1)));
+        }
+    }
+    return gradient;
+}
 
 function rgbaToHex(r, g, b, a) {
     const outR = Math.round((1 - a) * 255 + a * r);
@@ -189,11 +255,35 @@ function setModeDefaults() {
     const isDark = document.getElementById('baseMode').value === 'dark';
     const primary = document.getElementById('primaryColor').value;
     const r = parseInt(primary.slice(1,3), 16), g = parseInt(primary.slice(3,5), 16), b = parseInt(primary.slice(5,7), 16);
-    const bg = isDark ? "#121214" : rgbaToHex(r, g, b, 0.04);
-    const fg = isDark ? "#E2E8F0" : "#2C3E50";
+
+    if (document.getElementById('autoSync') && document.getElementById('autoSync').checked) {
+        syncThemeFromAccent();
+    } else {
+        const bg = isDark ? "#121214" : rgbaToHex(r, g, b, 0.04);
+        const fg = isDark ? "#E2E8F0" : "#2C3E50";
+        document.getElementById('pageBg').value = bg;
+        document.getElementById('pageFg').value = fg;
+    }
+    updateAll();
+}
+
+function syncThemeFromAccent() {
+    const autoSync = document.getElementById('autoSync').checked;
+    if (!autoSync) return;
+
+    const isDark = document.getElementById('baseMode').value === 'dark';
+    const accent = document.getElementById('primaryColor').value;
+
+    let bg, fg;
+    if (isDark) {
+        bg = adjustBrightness(accent, -90);
+        fg = adjustBrightness(accent, 90);
+    } else {
+        bg = adjustBrightness(accent, 95);
+        fg = adjustBrightness(accent, -80);
+    }
     document.getElementById('pageBg').value = bg;
     document.getElementById('pageFg').value = fg;
-    updateAll();
 }
 
 function updateAll() {
@@ -407,16 +497,44 @@ function updateCustomColor(i, color) {
 }
 
 function initPalettes() {
-    const grid = document.getElementById('paletteGrid'); 
-    if (grid) {
-        grid.innerHTML = "";
-        palettes.forEach((p, idx) => {
+    const container = document.getElementById('paletteGrid');
+    if (!container) return;
+
+    container.innerHTML = "";
+    container.className = "space-y-6";
+
+    let globalIdx = 0;
+
+    for (const [groupName, groupPalettes] of Object.entries(paletteGroups)) {
+        const header = document.createElement('h3');
+        header.className = "text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 border-b pb-1";
+        header.innerText = groupName;
+        container.appendChild(header);
+
+        const grid = document.createElement('div');
+        grid.className = "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3";
+
+        groupPalettes.forEach((p) => {
+            const currentIdx = globalIdx;
             const btn = document.createElement('div');
-            btn.className = `p-2 rounded border-2 cursor-pointer bg-white transition-all ${idx === selectedIdx ? 'border-blue-500 shadow-lg scale-105' : 'border-transparent'}`;
-            btn.onclick = () => { selectedIdx = idx; customColors = []; updateAll(); initPalettes(); };
+            const isSelected = (currentIdx === selectedIdx);
+
+            btn.className = `p-2 rounded border-2 cursor-pointer bg-white transition-all ${isSelected ? 'border-blue-500 shadow-lg scale-105' : 'border-transparent'}`;
+
+            btn.onclick = () => {
+                selectedIdx = currentIdx;
+                customColors = [];
+                updateAll();
+                initPalettes();
+            };
+
             btn.innerHTML = `<div class="flex h-3 mb-1 overflow-hidden rounded">${p.colors.slice(0,4).map(c=>`<div class="flex-1" style="background:${c}"></div>`).join('')}</div><span class="text-[8px] uppercase font-bold">${p.name}</span>`;
+
             grid.appendChild(btn);
+            globalIdx++;
         });
+
+        container.appendChild(grid);
     }
 }
 
