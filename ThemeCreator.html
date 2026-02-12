@@ -103,11 +103,6 @@
                     </table>
 
                     <table class="config-table">
-                        <tr><th colspan="2" class="bg-slate-100 p-2 text-blue-800">Slicer Settings</th></tr>
-                        <tr><td>Header Style</td><td><label><input type="checkbox" id="slicerHeaderContrast" onchange="updateAll()"> Contrast Header</label></td></tr>
-                    </table>
-
-                    <table class="config-table">
                         <tr><th colspan="2" class="bg-slate-100 p-2 text-blue-800">Chart Settings</th></tr>
                         <tr><td>Legend</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="chartLegendShow" onchange="updateAll()" checked> Show</label> <span>Position:</span><select id="chartLegendPos" onchange="updateAll()" class="p-1 border rounded"><option value="Top">Top</option><option value="Bottom">Bottom</option><option value="Left">Left</option><option value="Right">Right</option></select></div></td></tr>
                         <tr><td>Data Labels</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="chartLabelsShow" onchange="updateAll()" checked> Show</label> <span>Position:</span><select id="chartLabelsPos" onchange="updateAll()" class="p-1 border rounded"><option value="InsideEnd">InsideEnd</option><option value="OutsideEnd">OutsideEnd</option><option value="Center">Center</option></select> <span>Color:</span><input type="color" id="chartLabelsColor" value="#2C3E50" onchange="updateAll()" class="color-input-ui w-6 h-6"></div></td></tr>
@@ -132,41 +127,21 @@ let customColors = [];
 const statusCols = { good: "#00A36C", neutral: "#FFB000", bad: "#E05656" };
 
 const palettes = [
-    // --- COMPLIMENTARY ---
-    { name: "Blue & Orange", colors: ["#1F6FFF", "#FF9F1C", "#4BA3FF", "#FFBF69", "#0052CC", "#CC7A00", "#99CCFF", "#FFE0B3"] },
-    { name: "Teal & Red", colors: ["#2A9D8F", "#E76F51", "#264653", "#F4A261", "#E9C46A", "#C45B41", "#8AB17D", "#D88C78"] },
-    { name: "Purple & Yellow", colors: ["#7209B7", "#FFD60A", "#3A0CA3", "#FFC300", "#4361EE", "#FFEE32", "#B5179E", "#FFF3B0"] },
-
-    // --- CONTRAST ---
-    { name: "High Contrast", colors: ["#000000", "#FFD700", "#FF4500", "#1E90FF", "#32CD32", "#8A2BE2", "#FF1493", "#FFFFFF"] },
-    { name: "Vibrant Hub", colors: ["#F72585", "#7209B7", "#3A0CA3", "#4361EE", "#4CC9F0", "#480CA8", "#560BAD", "#B5179E"] },
-    { name: "Neon Lights", colors: ["#FF00FF", "#00FFFF", "#FFFF00", "#00FF00", "#FF0000", "#0000FF", "#FFFFFF", "#808080"] },
-
-    // --- WARM ---
-    { name: "Sunset Drive", colors: ["#F94144", "#F3722C", "#F8961E", "#F9844A", "#F9C74F", "#90BE6D", "#43AA8B", "#4D908E"] },
-    { name: "Autumn Leaves", colors: ["#D62828", "#F77F00", "#FCBF49", "#EAE2B7", "#A4161A", "#BA181B", "#E5383B", "#F5CB5C"] },
-    { name: "Desert Sand", colors: ["#A47148", "#BC8A5F", "#DDA15E", "#E9C46A", "#F4A261", "#E76F51", "#C45B41", "#BB3E03"] },
-
-    // --- COOL ---
+    { name: "Executive", colors: ["#1F6FFF", "#4BA3FF", "#00A36C", "#7C5CDB", "#FFB000", "#6B7280", "#FFC933", "#E05656"] },
     { name: "Nordic Teal", colors: ["#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#21867A", "#D1A142", "#C45B41"] },
-    { name: "Oceanic", colors: ["#005F73", "#0A9396", "#94D2BD", "#E9D8A6", "#EE9B00", "#CA6702", "#BB3E03", "#AE2012"] },
     { name: "Midnight", colors: ["#3D5A80", "#98C1D9", "#E0FBFC", "#EE6C4D", "#293241", "#566E8D", "#778DA9", "#1B263B"] },
-    { name: "Winter Blue", colors: ["#0077B6", "#0096C7", "#00B4D8", "#48CAE4", "#90E0EF", "#ADE8F4", "#CAF0F8", "#EDF6F9"] },
-
-    // --- MONOCHROMATIC ---
-    { name: "Corporate Blue", colors: ["#0D47A1", "#1565C0", "#1976D2", "#1E88E5", "#2196F3", "#42A5F5", "#64B5F6", "#90CAF9"] },
-    { name: "Eco Green", colors: ["#004B23", "#007200", "#008000", "#38B000", "#70E000", "#9EF01A", "#CCFF33", "#004B23"] },
-    { name: "Royal Purple", colors: ["#240046", "#3C096C", "#5A189A", "#7B2CBF", "#9D4EDD", "#C77DFF", "#E0AAFF", "#F3C4FB"] },
-    { name: "Slate Grey", colors: ["#212529", "#343A40", "#495057", "#6C757D", "#ADB5BD", "#CED4DA", "#DEE2E6", "#F8F9FA"] },
-
-    // --- GRADIENT/DIVERGING ---
-    { name: "Heatmap", colors: ["#D73027", "#F46D43", "#FDAE61", "#FEE08B", "#D9EF8B", "#66BD63", "#1A9850", "#006837"] },
-    { name: "Red to Blue", colors: ["#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC"] },
-    { name: "Spectral", colors: ["#9E0142", "#D53E4F", "#F46D43", "#FDAE61", "#FEE08B", "#FFFFBF", "#E6F598", "#ABDDA4"] },
-
-    // --- OTHER ---
-    { name: "Pastel", colors: ["#BDE0FE", "#A2D2FF", "#FFC8DD", "#FFAFCC", "#CDB4DB", "#E2ECE9", "#DFE7FD", "#F0EFEB"] },
     { name: "Financial", colors: ["#BC6C25", "#DDA15E", "#FEFAE0", "#606C38", "#283618", "#8B5E34", "#A47148", "#BC8A5F"] },
+    { name: "Corporate", colors: ["#0D47A1", "#1565C0", "#1976D2", "#1E88E5", "#2196F3", "#42A5F5", "#64B5F6", "#90CAF9"] },
+    { name: "Eco Green", colors: ["#004B23", "#007200", "#008000", "#38B000", "#70E000", "#9EF01A", "#CCFF33", "#004B23"] },
+    { name: "Vibrant Hub", colors: ["#F72585", "#7209B7", "#3A0CA3", "#4361EE", "#4CC9F0", "#480CA8", "#560BAD", "#B5179E"] },
+    { name: "Oceanic", colors: ["#005F73", "#0A9396", "#94D2BD", "#E9D8A6", "#EE9B00", "#CA6702", "#BB3E03", "#AE2012"] },
+    { name: "Sunset Drive", colors: ["#F94144", "#F3722C", "#F8961E", "#F9844A", "#F9C74F", "#90BE6D", "#43AA8B", "#4D908E"] },
+    { name: "Pastel", colors: ["#BDE0FE", "#A2D2FF", "#FFC8DD", "#FFAFCC", "#CDB4DB", "#E2ECE9", "#DFE7FD", "#F0EFEB"] },
+    { name: "High Power", colors: ["#000000", "#FFD700", "#FF4500", "#1E90FF", "#32CD32", "#8A2BE2", "#FF1493", "#FFFFFF"] },
+    { name: "Slate Teal", colors: ["#2D3E50", "#1ABC9C", "#34495E", "#16A085", "#2C3E50", "#95A5A6", "#7F8C8D", "#BDC3C7"] },
+    { name: "Energy High", colors: ["#FF9F1C", "#FFBF69", "#FFFFFF", "#CBF3F0", "#2EC4B6", "#FF9F1C", "#FF4D6D", "#C9184A"] },
+    { name: "Modern Dark", colors: ["#212529", "#343A40", "#495057", "#6C757D", "#ADB5BD", "#CED4DA", "#DEE2E6", "#F8F9FA"] },
+    { name: "Shadow Sky", colors: ["#001219", "#005F73", "#0A9396", "#94D2BD", "#E9D8A6", "#EE9B00", "#CA6702", "#BB3E03"] },
     { name: "Excel Classic", colors: ["#217346", "#439467", "#84C4A1", "#C7E5D6", "#107C10", "#2B5797", "#E06666", "#F6B26B"] }
 ];
 
@@ -225,9 +200,9 @@ function updateAll() {
         xAxis: { type: 'category', axisLabel: { color: fg } },
         yAxis: { type: 'value', axisLabel: { color: fg } }
     };
-    if (chartsInstance.bar) chartsInstance.bar.setOption({...opt, xAxis: {data: ['N','S','E','W','NW','SE','NE','SW']}, series: [{data: [15,28,12,30,22,18,25,14], type: 'bar', itemStyle: { color: (params) => palette[params.dataIndex % palette.length] }}]});
+    if (chartsInstance.bar) chartsInstance.bar.setOption({...opt, xAxis: {data: ['N','S','E','W']}, series: [{data: [15,28,12,30], type: 'bar'}]});
     if (chartsInstance.line) chartsInstance.line.setOption({...opt, xAxis: {data: ['Q1','Q2','Q3','Q4']}, series: [{data: [10,22,18,35], type: 'line', smooth: true}]});
-    if (chartsInstance.pie) chartsInstance.pie.setOption({...opt, xAxis: null, yAxis: null, series: [{type: 'pie', radius: '60%', data: [{value: 30, name: 'Audit'}, {value: 25, name: 'Tax'}, {value: 20, name: 'Legal'}, {value: 15, name: 'HR'}, {value: 10, name: 'IT'}, {value: 8, name: 'Ops'}, {value: 5, name: 'Mkt'}, {value: 3, name: 'R&D'}]}]});
+    if (chartsInstance.pie) chartsInstance.pie.setOption({...opt, xAxis: null, yAxis: null, series: [{type: 'pie', radius: '60%', data: [{value: 40, name: 'Audit'}, {value: 60, name: 'Tax'}]}]});
 
     const hCon = document.getElementById('headerContrast').checked;
     const tCon = document.getElementById('totalContrast').checked;
@@ -278,7 +253,6 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
 
     const hCon = document.getElementById('headerContrast').checked;
     const tCon = document.getElementById('totalContrast').checked;
-    const sCon = document.getElementById('slicerHeaderContrast') ? document.getElementById('slicerHeaderContrast').checked : false;
 
     const stepped = document.getElementById('steppedLayout').checked;
     const steppedIndent = parseInt(document.getElementById('steppedIndent').value);
@@ -315,16 +289,8 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
 
     const hBg = solid(hCon ? primary : (dark ? "#2D3748" : "#E8ECF2"));
     const hTxt = solid(hCon ? "#FFFFFF" : (dark ? "#FFFFFF" : "#273444"));
-
-    // Table Totals Logic (Fixed)
-    // If tCon is true (Contrast), use Primary Background + White Text.
-    // If tCon is false (Standard), use Default Background (White/Dark) + Foreground Text.
     const tBg = solid(tCon ? primary : (dark ? "#2D3748" : "#FFFFFF"));
     const tTxt = solid(tCon ? "#FFFFFF" : fg);
-
-    // Slicer Header Logic
-    const sBg = solid(sCon ? primary : (dark ? "#2D3748" : "#E8ECF2"));
-    const sTxt = solid(sCon ? "#FFFFFF" : (dark ? "#FFFFFF" : "#273444"));
 
     const rowPri = solid(dark ? "#1E1E22" : "#FFFFFF");
     const rowSec = banded ? solid(dark ? "#252528" : "#F0F2F5") : rowPri;
@@ -348,7 +314,7 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
                 "grid": [{ "rowPadding": gridPadding, "textSize": textSize, "gridVertical": grid, "gridHorizontal": grid }],
                 "columnHeaders": [{ "fontColor": hTxt, "backColor": hBg, "fontFace": font, "textSize": textSize, "alignment": "Left", "wordWrap": wordWrap, "autoSizeColumnWidth": autoSize }],
                 "values": [{ "fontFamily": font, "fontSize": textSize-1, "fontColorPrimary": solid(fg), "backColorPrimary": rowPri, "fontColorSecondary": solid(fg), "backColorSecondary": rowSec, "urlIcon": urlIcon, "wordWrap": wordWrap }],
-                "total": [{ "totals": true, "label": "Total", "fontColor": tTxt, "backColor": tBg, "applyToHeaders": false, "fontFamily": font, "fontSize": textSize }]
+                "total": [{ "totals": true, "label": "Total", "fontColor": solid("#FFFFFF"), "backColor": solid(primary), "applyToHeaders": false, "fontFamily": font, "fontSize": textSize }]
             }},
             "matrix": { "*": {
                 "grid": [{ "rowPadding": gridPadding, "textSize": textSize, "gridVertical": grid, "gridHorizontal": grid }],
@@ -361,7 +327,7 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
                 "total": [{ "totals": true, "fontColor": tTxt, "backColor": tBg, "fontFamily": font, "fontSize": textSize+1 }]
             }},
             "slicer": { "*": {
-                "header": [{ "show": true, "fontColor": sTxt, "background": sBg, "outline": "None", "textSize": 11, "fontFamily": font }],
+                "header": [{ "show": true, "fontColor": solid(fg), "background": hBg, "outline": "None", "textSize": 11, "fontFamily": font }],
                 "items": [{ "fontColor": solid(fg), "backgroundColor": rowPri, "hoverColor": solid(dark ? "#333" : "#F2F5FA"), "selectedColor": solid(dark ? "#444" : "#DDE7FF"), "outline": "None", "textSize": 10, "fontFamily": font }],
                 "numericInputStyle": [{ "fontColor": solid(fg), "background": rowPri, "outline": "None", "textSize": 10, "fontFamily": font }],
                 "date": [{ "fontColor": solid(fg), "background": rowPri, "textSize": 10, "fontFamily": font }],
