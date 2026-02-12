@@ -19,7 +19,7 @@
 </head>
 <body class="p-4 font-sans text-sm transition-colors duration-500">
     <div class="max-w-7xl mx-auto shadow-2xl rounded-2xl overflow-hidden flex flex-col h-[92vh] border border-slate-300 bg-white">
-        
+
         <div class="bg-slate-900 text-white p-6 flex justify-between items-center">
             <div>
                 <h1 class="text-xl font-black text-blue-400">Finance BI <span class="text-white font-light">Theme Master</span></h1>
@@ -63,9 +63,21 @@
                 <div class="bg-white rounded-xl shadow-sm border p-6 mb-6">
                     <div class="grid grid-cols-2 gap-8 mb-6">
                         <div><label class="block text-[10px] font-bold uppercase mb-1">Mode</label>
-                        <select id="baseMode" onchange="updateAll()" class="w-full p-2 border rounded bg-white"><option value="light">Light Theme</option><option value="dark">Dark Theme</option></select></div>
+                        <select id="baseMode" onchange="setModeDefaults()" class="w-full p-2 border rounded bg-white"><option value="light">Light Theme</option><option value="dark">Dark Theme</option></select></div>
                         <div><label class="block text-[10px] font-bold uppercase mb-1">Accent</label>
                         <input type="color" id="primaryColor" value="#1F6FFF" onchange="updateAll()" class="w-full h-10 rounded cursor-pointer"></div>
+                    </div>
+                    <div class="grid grid-cols-5 gap-4 mb-6">
+                        <div><label class="block text-[10px] font-bold uppercase mb-1">Good</label>
+                        <input type="color" id="statusGood" value="#00A36C" onchange="updateAll()" class="w-full h-8 rounded cursor-pointer"></div>
+                        <div><label class="block text-[10px] font-bold uppercase mb-1">Neutral</label>
+                        <input type="color" id="statusNeutral" value="#FFB000" onchange="updateAll()" class="w-full h-8 rounded cursor-pointer"></div>
+                        <div><label class="block text-[10px] font-bold uppercase mb-1">Bad</label>
+                        <input type="color" id="statusBad" value="#E05656" onchange="updateAll()" class="w-full h-8 rounded cursor-pointer"></div>
+                        <div><label class="block text-[10px] font-bold uppercase mb-1">Page BG</label>
+                        <input type="color" id="pageBg" value="#F5F7FA" onchange="updateAll()" class="w-full h-8 rounded cursor-pointer"></div>
+                        <div><label class="block text-[10px] font-bold uppercase mb-1">Foreground</label>
+                        <input type="color" id="pageFg" value="#2C3E50" onchange="updateAll()" class="w-full h-8 rounded cursor-pointer"></div>
                     </div>
                     <div id="paletteInspector" class="flex flex-wrap gap-3 p-4 bg-slate-50 rounded border"></div>
                 </div>
@@ -73,14 +85,31 @@
             </div>
 
             <div id="tab-visuals" class="tab-content">
-                <div class="bg-white rounded-xl border overflow-hidden">
+                <div class="bg-white rounded-xl border overflow-hidden space-y-4 p-4">
                     <table class="config-table">
-                        <tr><th colspan="2" class="bg-slate-100 p-2 text-blue-800">Visual Controls</th></tr>
+                        <tr><th colspan="2" class="bg-slate-100 p-2 text-blue-800">General Visual Settings</th></tr>
                         <tr><td>Font Face</td><td><select id="masterFont" onchange="updateAll()" class="p-2 border rounded w-full"><option value="Arial">Arial</option><option value="Segoe UI">Segoe UI</option><option value="Calibri">Calibri</option></select></td></tr>
                         <tr><td>Borders</td><td><div class="flex items-center gap-4"><span>Show:</span><input type="checkbox" id="showBorders" onchange="updateAll()"> <span>Radius:</span><input type="number" id="borderRadius" value="12" onchange="updateAll()" class="w-20 p-2 border rounded"></div></td></tr>
-                        <tr><td>Grid Lines</td><td><input type="checkbox" id="showGrid" onchange="updateAll()" checked> Show Vertical/Horizontal</td></tr>
-                        <tr><td>Tables</td><td><input type="checkbox" id="bandedRows" onchange="updateAll()" checked> Banded Row Style</td></tr>
-                        <tr><td>Contrast Toggles</td><td><div class="flex gap-4"><label><input type="checkbox" id="headerContrast" onchange="updateAll()"> Headers</label><label><input type="checkbox" id="totalContrast" onchange="updateAll()"> Totals</label></div></td></tr>
+                        <tr><td>Visual Header</td><td><div class="flex gap-4"><label><input type="checkbox" id="showHeaderTooltip" onchange="updateAll()" checked> Tooltip Button</label> <label><input type="checkbox" id="showHeaderOptions" onchange="updateAll()"> Options Menu</label></div></td></tr>
+                    </table>
+
+                    <table class="config-table">
+                        <tr><th colspan="2" class="bg-slate-100 p-2 text-blue-800">Table & Matrix Settings</th></tr>
+                        <tr><td>Grid</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="showGrid" onchange="updateAll()" checked> Show Lines</label> <span>Padding:</span><input type="number" id="gridPadding" value="2" onchange="updateAll()" class="w-16 p-1 border rounded"> <span>Text Size:</span><input type="number" id="gridTextSize" value="10" onchange="updateAll()" class="w-16 p-1 border rounded"></div></td></tr>
+                        <tr><td>Table Options</td><td><div class="flex gap-4"><label><input type="checkbox" id="bandedRows" onchange="updateAll()" checked> Banded Rows</label> <label><input type="checkbox" id="urlIcon" onchange="updateAll()" checked> URL Icon</label> <label><input type="checkbox" id="wordWrap" onchange="updateAll()" checked> Word Wrap</label> <label><input type="checkbox" id="autoSizeCol" onchange="updateAll()" checked> Auto Size</label></div></td></tr>
+                        <tr><td>Contrast</td><td><div class="flex gap-4"><label><input type="checkbox" id="headerContrast" onchange="updateAll()"> Headers</label><label><input type="checkbox" id="totalContrast" onchange="updateAll()"> Totals</label></div></td></tr>
+                        <tr><td>Matrix Layout</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="steppedLayout" onchange="updateAll()" checked> Stepped</label> <span>Indent:</span><input type="number" id="steppedIndent" value="14" onchange="updateAll()" class="w-16 p-1 border rounded"></div></td></tr>
+                        <tr><td>Matrix Subtotals</td><td><div class="flex gap-4"><label><input type="checkbox" id="rowSubtotals" onchange="updateAll()" checked> Row Subtotals</label> <label><input type="checkbox" id="colSubtotals" onchange="updateAll()" checked> Column Subtotals</label></div></td></tr>
+                    </table>
+
+                    <table class="config-table">
+                        <tr><th colspan="2" class="bg-slate-100 p-2 text-blue-800">Chart Settings</th></tr>
+                        <tr><td>Legend</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="chartLegendShow" onchange="updateAll()" checked> Show</label> <span>Position:</span><select id="chartLegendPos" onchange="updateAll()" class="p-1 border rounded"><option value="Top">Top</option><option value="Bottom">Bottom</option><option value="Left">Left</option><option value="Right">Right</option></select></div></td></tr>
+                        <tr><td>Data Labels</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="chartLabelsShow" onchange="updateAll()" checked> Show</label> <span>Position:</span><select id="chartLabelsPos" onchange="updateAll()" class="p-1 border rounded"><option value="InsideEnd">InsideEnd</option><option value="OutsideEnd">OutsideEnd</option><option value="Center">Center</option></select> <span>Color:</span><input type="color" id="chartLabelsColor" value="#2C3E50" onchange="updateAll()" class="color-input-ui w-6 h-6"></div></td></tr>
+                        <tr><td>Axes</td><td><div class="flex flex-col gap-2">
+                            <div class="flex items-center gap-4"><span class="font-bold w-12">X-Axis:</span> <label><input type="checkbox" id="xAxisShow" onchange="updateAll()" checked> Show</label> <label><input type="checkbox" id="xAxisGrid" onchange="updateAll()" checked> Grid</label> <input type="color" id="xAxisGridColor" value="#E5EAF0" onchange="updateAll()" class="color-input-ui w-5 h-5" title="Grid Color"> <input type="color" id="xAxisLabelColor" value="#2C3E50" onchange="updateAll()" class="color-input-ui w-5 h-5" title="Label Color"></div>
+                            <div class="flex items-center gap-4"><span class="font-bold w-12">Y-Axis:</span> <label><input type="checkbox" id="yAxisShow" onchange="updateAll()" checked> Show</label> <label><input type="checkbox" id="yAxisGrid" onchange="updateAll()" checked> Grid</label> <input type="color" id="yAxisGridColor" value="#E5EAF0" onchange="updateAll()" class="color-input-ui w-5 h-5" title="Grid Color"> <input type="color" id="yAxisLabelColor" value="#2C3E50" onchange="updateAll()" class="color-input-ui w-5 h-5" title="Label Color"></div>
+                        </div></td></tr>
                     </table>
                 </div>
             </div>
@@ -94,7 +123,7 @@
 <script>
 let chartsInstance = { bar: null, line: null, pie: null };
 let selectedIdx = 0;
-let customColors = []; 
+let customColors = [];
 const statusCols = { good: "#00A36C", neutral: "#FFB000", bad: "#E05656" };
 
 const palettes = [
@@ -131,6 +160,17 @@ function showTab(id) {
     if (id === 'preview') { setTimeout(() => { updateAll(); }, 100); }
 }
 
+function setModeDefaults() {
+    const isDark = document.getElementById('baseMode').value === 'dark';
+    const primary = document.getElementById('primaryColor').value;
+    const r = parseInt(primary.slice(1,3), 16), g = parseInt(primary.slice(3,5), 16), b = parseInt(primary.slice(5,7), 16);
+    const bg = isDark ? "#121214" : rgbaToHex(r, g, b, 0.04);
+    const fg = isDark ? "#E2E8F0" : "#2C3E50";
+    document.getElementById('pageBg').value = bg;
+    document.getElementById('pageFg').value = fg;
+    updateAll();
+}
+
 function updateAll() {
     const barEl = document.getElementById('barChart');
     const lineEl = document.getElementById('lineChart');
@@ -144,7 +184,7 @@ function updateAll() {
     const primary = document.getElementById('primaryColor').value;
     const font = document.getElementById('masterFont').value;
     const palette = (customColors.length > 0) ? customColors : [primary, ...palettes[selectedIdx].colors.slice(1, 8)];
-    
+
     const r = parseInt(primary.slice(1,3), 16), g = parseInt(primary.slice(3,5), 16), b = parseInt(primary.slice(5,7), 16);
     const bgHex = isDark ? "#121214" : rgbaToHex(r, g, b, 0.04);
     const pageBgHex = isDark ? "#0A0A0C" : rgbaToHex(r, g, b, 0.12);
@@ -153,9 +193,9 @@ function updateAll() {
     document.body.style.backgroundColor = pageBgHex;
     document.getElementById('canvas').style.backgroundColor = bgHex;
 
-    const opt = { 
-        textStyle: { color: fg, fontFamily: font }, 
-        color: palette, 
+    const opt = {
+        textStyle: { color: fg, fontFamily: font },
+        color: palette,
         animation: false,
         xAxis: { type: 'category', axisLabel: { color: fg } },
         yAxis: { type: 'value', axisLabel: { color: fg } }
@@ -166,7 +206,7 @@ function updateAll() {
 
     const hCon = document.getElementById('headerContrast').checked;
     const tCon = document.getElementById('totalContrast').checked;
-    const isBanded = document.getElementById('bandedRows').value === 'true';
+    const isBanded = document.getElementById('bandedRows').checked;
     const gridEnabled = document.getElementById('showGrid').checked;
 
     const hBg = hCon ? primary : (isDark ? "#2D3748" : "#E8ECF2");
@@ -178,7 +218,7 @@ function updateAll() {
     document.getElementById('tableHead').style.color = hTxt;
     document.getElementById('tableTotal').style.background = tBg;
     document.getElementById('tableTotal').style.color = tTxt;
-    
+
     const rowPriBg = isDark ? "#1E1E22" : "#FFFFFF";
     const rowSecBg = isBanded ? (isDark ? "#252528" : "#F0F2F5") : rowPriBg;
     document.querySelector('#previewTable tbody tr:nth-child(1)').style.background = rowPriBg;
@@ -197,20 +237,63 @@ function updateAll() {
 function buildTheme(pal, bg, fg, dark, primary, font) {
     const border = document.getElementById('showBorders').checked;
     const rad = parseInt(document.getElementById('borderRadius').value);
+
+    // New inputs
+    const showTooltip = document.getElementById('showHeaderTooltip').checked;
+    const showOptionsMenu = document.getElementById('showHeaderOptions').checked;
+
     const grid = document.getElementById('showGrid').checked;
-    const banded = document.getElementById('bandedRows').value === 'true';
+    const gridPadding = parseInt(document.getElementById('gridPadding').value);
+    const textSize = parseInt(document.getElementById('gridTextSize').value);
+
+    const banded = document.getElementById('bandedRows').checked;
+    const urlIcon = document.getElementById('urlIcon').checked;
+    const wordWrap = document.getElementById('wordWrap').checked;
+    const autoSize = document.getElementById('autoSizeCol').checked;
+
     const hCon = document.getElementById('headerContrast').checked;
     const tCon = document.getElementById('totalContrast').checked;
 
+    const stepped = document.getElementById('steppedLayout').checked;
+    const steppedIndent = parseInt(document.getElementById('steppedIndent').value);
+    const rowSub = document.getElementById('rowSubtotals').checked;
+    const colSub = document.getElementById('colSubtotals').checked;
+
+    // Chart inputs
+    const legShow = document.getElementById('chartLegendShow').checked;
+    const legPos = document.getElementById('chartLegendPos').value;
+    const lblShow = document.getElementById('chartLabelsShow').checked;
+    const lblPos = document.getElementById('chartLabelsPos').value;
+    const lblCol = document.getElementById('chartLabelsColor').value;
+
     const solid = (c) => ({ "solid": { "color": c } });
+
+    const catAx = [{
+        "show": document.getElementById('xAxisShow').checked,
+        "labelColor": solid(document.getElementById('xAxisLabelColor').value),
+        "titleColor": solid(fg),
+        "fontSize": 9, "fontFamily": font,
+        "gridLineShow": document.getElementById('xAxisGrid').checked,
+        "gridLineColor": solid(document.getElementById('xAxisGridColor').value),
+        "gridLineThickness": 1
+    }];
+    const valAx = [{
+        "show": document.getElementById('yAxisShow').checked,
+        "labelColor": solid(document.getElementById('yAxisLabelColor').value),
+        "titleColor": solid(fg),
+        "fontSize": 9, "fontFamily": font,
+        "gridLineShow": document.getElementById('yAxisGrid').checked,
+        "gridLineColor": solid(document.getElementById('yAxisGridColor').value),
+        "gridLineThickness": 1
+    }];
+
     const hBg = solid(hCon ? primary : (dark ? "#2D3748" : "#E8ECF2"));
     const hTxt = solid(hCon ? "#FFFFFF" : (dark ? "#FFFFFF" : "#273444"));
     const tBg = solid(tCon ? primary : (dark ? "#2D3748" : "#FFFFFF"));
     const tTxt = solid(tCon ? "#FFFFFF" : fg);
-    
+
     const rowPri = solid(dark ? "#1E1E22" : "#FFFFFF");
     const rowSec = banded ? solid(dark ? "#252528" : "#F0F2F5") : rowPri;
-    const ax = [{ "show": true, "labelColor": solid(fg), "fontSize": 9, "fontFamily": font }];
 
     // FULL 14KB+ SCHEMA (Exact match to LightTheme01.json structure)
     return {
@@ -225,44 +308,55 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
                 "title": [{ "show": false }],
                 "background": [{ "show": true, "color": solid(bg), "transparency": 0 }],
                 "border": [{ "show": border, "radius": rad }],
-                "visualHeader": [{ "show": true, "showTooltipButton": true, "showOptionsMenu": false }]
+                "visualHeader": [{ "show": true, "showTooltipButton": showTooltip, "showOptionsMenu": showOptionsMenu }]
             }},
             "tableEx": { "*": {
-                "grid": [{ "rowPadding": 2, "textSize": 10, "gridVertical": grid, "gridHorizontal": grid }],
-                "columnHeaders": [{ "fontColor": hTxt, "backColor": hBg, "fontFace": font, "textSize": 10, "alignment": "Left", "wordWrap": true, "autoSizeColumnWidth": true }],
-                "values": [{ "fontFamily": font, "fontSize": 9, "fontColorPrimary": solid(fg), "backColorPrimary": rowPri, "fontColorSecondary": solid(fg), "backColorSecondary": rowSec, "urlIcon": true, "wordWrap": true }],
-                "total": [{ "totals": true, "label": "Total", "fontColor": solid("#FFFFFF"), "backColor": solid(primary), "applyToHeaders": false, "fontFamily": font, "fontSize": 10 }]
+                "grid": [{ "rowPadding": gridPadding, "textSize": textSize, "gridVertical": grid, "gridHorizontal": grid }],
+                "columnHeaders": [{ "fontColor": hTxt, "backColor": hBg, "fontFace": font, "textSize": textSize, "alignment": "Left", "wordWrap": wordWrap, "autoSizeColumnWidth": autoSize }],
+                "values": [{ "fontFamily": font, "fontSize": textSize-1, "fontColorPrimary": solid(fg), "backColorPrimary": rowPri, "fontColorSecondary": solid(fg), "backColorSecondary": rowSec, "urlIcon": urlIcon, "wordWrap": wordWrap }],
+                "total": [{ "totals": true, "label": "Total", "fontColor": solid("#FFFFFF"), "backColor": solid(primary), "applyToHeaders": false, "fontFamily": font, "fontSize": textSize }]
             }},
             "matrix": { "*": {
-                "grid": [{ "rowPadding": 2, "textSize": 10, "gridVertical": grid, "gridHorizontal": grid }],
-                "columnHeaders": [{ "fontColor": hTxt, "backColor": hBg, "fontFace": font, "textSize": 10, "alignment": "Left", "wordWrap": true }],
-                "rowHeaders": [{ "fontColor": hTxt, "backColor": solid(dark ? "#1a1a1e" : "#EDF1F6"), "stepped": true, "steppedLayoutIndentation": 14, "showExpandCollapseButtons": true, "expandCollapseButtonsColor": solid(fg), "fontFamily": font, "fontSize": 9 }],
-                "values": [{ "fontFamily": font, "fontSize": 9, "fontColorPrimary": solid(fg), "backColorPrimary": rowPri, "fontColorSecondary": solid(fg), "backColorSecondary": rowSec, "bandedRowHeaders": true, "urlIcon": true }],
-                "subTotals": [{ "rowSubTotals": true, "columnSubTotals": true, "fontColor": hTxt, "backColor": solid(dark ? "#2D3748" : "#E1E6EE"), "applyToHeaders": false, "fontFamily": font, "fontSize": 10, "rowSubTotalPosition": "Bottom" }],
-                "rowTotal": [{ "fontColor": tTxt, "backColor": tBg, "fontSize": 11 }],
-                "columnTotal": [{ "fontColor": tTxt, "backColor": tBg, "fontSize": 11 }],
-                "total": [{ "totals": true, "fontColor": tTxt, "backColor": tBg, "fontFamily": font, "fontSize": 11 }]
+                "grid": [{ "rowPadding": gridPadding, "textSize": textSize, "gridVertical": grid, "gridHorizontal": grid }],
+                "columnHeaders": [{ "fontColor": hTxt, "backColor": hBg, "fontFace": font, "textSize": textSize, "alignment": "Left", "wordWrap": wordWrap }],
+                "rowHeaders": [{ "fontColor": hTxt, "backColor": solid(dark ? "#1a1a1e" : "#EDF1F6"), "stepped": stepped, "steppedLayoutIndentation": steppedIndent, "showExpandCollapseButtons": true, "expandCollapseButtonsColor": solid(fg), "fontFamily": font, "fontSize": textSize-1 }],
+                "values": [{ "fontFamily": font, "fontSize": textSize-1, "fontColorPrimary": solid(fg), "backColorPrimary": rowPri, "fontColorSecondary": solid(fg), "backColorSecondary": rowSec, "bandedRowHeaders": true, "urlIcon": urlIcon, "wordWrap": wordWrap }],
+                "subTotals": [{ "rowSubTotals": rowSub, "columnSubTotals": colSub, "fontColor": hTxt, "backColor": solid(dark ? "#2D3748" : "#E1E6EE"), "applyToHeaders": false, "fontFamily": font, "fontSize": textSize, "rowSubTotalPosition": "Bottom" }],
+                "rowTotal": [{ "fontColor": tTxt, "backColor": tBg, "fontSize": textSize+1 }],
+                "columnTotal": [{ "fontColor": tTxt, "backColor": tBg, "fontSize": textSize+1 }],
+                "total": [{ "totals": true, "fontColor": tTxt, "backColor": tBg, "fontFamily": font, "fontSize": textSize+1 }]
             }},
             "slicer": { "*": {
                 "header": [{ "show": true, "fontColor": solid(fg), "background": hBg, "outline": "None", "textSize": 11, "fontFamily": font }],
                 "items": [{ "fontColor": solid(fg), "backgroundColor": rowPri, "hoverColor": solid(dark ? "#333" : "#F2F5FA"), "selectedColor": solid(dark ? "#444" : "#DDE7FF"), "outline": "None", "textSize": 10, "fontFamily": font }],
+                "numericInputStyle": [{ "fontColor": solid(fg), "background": rowPri, "outline": "None", "textSize": 10, "fontFamily": font }],
+                "date": [{ "fontColor": solid(fg), "background": rowPri, "textSize": 10, "fontFamily": font }],
+                "slider": [{ "show": true, "background": solid(dark ? "#333" : "#E2E8F0") }],
                 "background": [{ "show": true, "color": solid(bg), "transparency": 0 }],
                 "general": [{ "outlineColor": solid(primary), "outlineWeight": 1, "responsive": false }]
             }},
-            "barChart": { "*": { "legend": [{ "show": true, "position": "Top" }], "categoryAxis": ax, "valueAxis": ax, "series": [{ "colors": pal }] }},
-            "clusteredBarChart": { "*": { "legend": [{ "show": true }], "categoryAxis": ax, "valueAxis": ax, "series": [{ "colors": pal }] }},
-            "columnChart": { "*": { "legend": [{ "show": true }], "categoryAxis": ax, "valueAxis": ax, "series": [{ "colors": pal }] }},
-            "clusteredColumnChart": { "*": { "legend": [{ "show": true }], "categoryAxis": ax, "valueAxis": ax, "series": [{ "colors": pal }] }},
-            "lineChart": { "*": { "legend": [{ "show": true }], "lineStyles": [{ "strokeWidth": 2, "showMarker": true }], "categoryAxis": ax, "valueAxis": ax, "series": [{ "colors": pal }] }},
-            "areaChart": { "*": { "legend": [{ "show": true }], "lineStyles": [{ "strokeWidth": 2 }], "categoryAxis": ax, "valueAxis": ax, "series": [{ "colors": pal }] }},
-            "pieChart": { "*": { "labels": [{ "show": true, "fontFamily": font, "fontSize": 9, "color": solid(fg) }] }},
-            "donutChart": { "*": { "labels": [{ "show": true, "fontFamily": font, "fontSize": 9 }], "slices": [{ "innerRadiusRatio": 35 }] }}
+            "advancedSlicerVisual": { "*": {
+                "background": [{ "show": true, "color": solid(bg), "transparency": 0 }],
+                "fillCustom": [{ "$id": "default", "fillColor": rowPri }],
+                "value": [{ "$id": "default", "textWrap": true, "color": solid(fg) }],
+                "outline": [{ "$id": "default", "lineColor": solid(primary), "transparency": 20 }],
+                "states": [{ "selectedColor": solid(dark ? "#444" : "#DDE7FF"), "hoverColor": solid(dark ? "#333" : "#F2F5FA") }]
+            }},
+            "barChart": { "*": { "legend": [{ "show": legShow, "position": legPos }], "labels": [{ "show": lblShow, "labelPosition": lblPos, "fontSize": 9, "fontFamily": font, "color": solid(lblCol) }], "categoryAxis": catAx, "valueAxis": valAx, "series": [{ "colors": pal }] }},
+            "clusteredBarChart": { "*": { "legend": [{ "show": legShow }], "labels": [{ "show": lblShow, "labelPosition": lblPos, "fontSize": 9, "fontFamily": font, "color": solid(lblCol) }], "categoryAxis": catAx, "valueAxis": valAx, "series": [{ "colors": pal }] }},
+            "columnChart": { "*": { "legend": [{ "show": legShow }], "labels": [{ "show": lblShow, "labelPosition": lblPos, "fontSize": 9, "fontFamily": font, "color": solid(lblCol) }], "categoryAxis": catAx, "valueAxis": valAx, "series": [{ "colors": pal }] }},
+            "clusteredColumnChart": { "*": { "legend": [{ "show": legShow }], "labels": [{ "show": lblShow, "labelPosition": lblPos, "fontSize": 9, "fontFamily": font, "color": solid(lblCol) }], "categoryAxis": catAx, "valueAxis": valAx, "series": [{ "colors": pal }] }},
+            "lineChart": { "*": { "legend": [{ "show": legShow }], "lineStyles": [{ "strokeWidth": 2, "showMarker": true }], "categoryAxis": catAx, "valueAxis": valAx, "series": [{ "colors": pal }] }},
+            "areaChart": { "*": { "legend": [{ "show": legShow }], "lineStyles": [{ "strokeWidth": 2 }], "categoryAxis": catAx, "valueAxis": valAx, "series": [{ "colors": pal }] }},
+            "pieChart": { "*": { "labels": [{ "show": true, "labelStyle": "Category, data value, percent of total", "fontFamily": font, "fontSize": 9, "color": solid(fg) }] }},
+            "donutChart": { "*": { "labels": [{ "show": true, "labelStyle": "Category, data value, percent of total", "fontFamily": font, "fontSize": 9, "color": solid(fg) }], "slices": [{ "innerRadiusRatio": 35 }] }}
         }
     };
 }
 
+
 function renderInspector(pal) {
-    const insp = document.getElementById('paletteInspector'); 
+    const insp = document.getElementById('paletteInspector');
     if (insp) {
         insp.innerHTML = "";
         pal.forEach((c, i) => {
@@ -279,7 +373,7 @@ function updateCustomColor(i, color) {
 }
 
 function initPalettes() {
-    const grid = document.getElementById('paletteGrid'); 
+    const grid = document.getElementById('paletteGrid');
     if (grid) {
         grid.innerHTML = "";
         palettes.forEach((p, idx) => {
