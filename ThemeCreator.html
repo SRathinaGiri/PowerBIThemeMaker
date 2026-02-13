@@ -276,11 +276,13 @@ function syncThemeFromAccent() {
 
     let bg, fg;
     if (isDark) {
-        bg = adjustBrightness(accent, -90);
-        fg = adjustBrightness(accent, 90);
+        // Dark Mode: BG is very dark shade of accent, FG is very light tint of accent
+        bg = interpolateColor(accent, "#121212", 0.95);
+        fg = interpolateColor(accent, "#F0F0F0", 0.90);
     } else {
-        bg = adjustBrightness(accent, 95);
-        fg = adjustBrightness(accent, -80);
+        // Light Mode: BG is very light tint of accent, FG is very dark shade of accent
+        bg = interpolateColor(accent, "#FFFFFF", 0.97);
+        fg = interpolateColor(accent, "#121212", 0.80);
     }
     document.getElementById('pageBg').value = bg;
     document.getElementById('pageFg').value = fg;
