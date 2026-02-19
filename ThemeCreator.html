@@ -98,7 +98,7 @@
                         <tr><td>Grid</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="showGrid" onchange="updateAll()" checked> Show Lines</label> <span>Padding:</span><input type="number" id="gridPadding" value="2" onchange="updateAll()" class="w-16 p-1 border rounded"> <span>Text Size:</span><input type="number" id="gridTextSize" value="10" onchange="updateAll()" class="w-16 p-1 border rounded"></div></td></tr>
                         <tr><td>Table Options</td><td><div class="flex gap-4"><label><input type="checkbox" id="bandedRows" onchange="updateAll()" checked> Banded Rows</label> <label><input type="checkbox" id="urlIcon" onchange="updateAll()" checked> URL Icon</label> <label><input type="checkbox" id="wordWrap" onchange="updateAll()" checked> Word Wrap</label> <label><input type="checkbox" id="autoSizeCol" onchange="updateAll()" checked> Auto Size</label></div></td></tr>
                         <tr><td>Row Colors</td><td><div class="flex items-center gap-4"><span>Bg:</span><input type="color" id="tableBg" value="#FFFFFF" onchange="updateAll()" class="color-input-ui w-6 h-6"> <span>Text:</span><input type="color" id="tableFg" value="#2C3E50" onchange="updateAll()" class="color-input-ui w-6 h-6"> <span>Banded:</span><input type="color" id="tableBanded" value="#F0F2F5" onchange="updateAll()" class="color-input-ui w-6 h-6"></div></td></tr>
-                        <tr><td>Contrast</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="headerContrast" onchange="updateAll()"> Headers</label><label><input type="checkbox" id="totalContrast" onchange="updateAll()"> Totals</label> <span>Text:</span><input type="color" id="contrastTextColor" value="#FFFFFF" onchange="updateAll()" class="color-input-ui w-6 h-6" title="Contrast Text Color"></div></td></tr>
+                        <tr><td>Contrast</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="headerContrast" onchange="updateAll()"> Headers</label><label><input type="checkbox" id="totalContrast" onchange="updateAll()"> Totals</label></div></td></tr>
                         <tr><td>Matrix Layout</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="steppedLayout" onchange="updateAll()" checked> Stepped</label> <span>Indent:</span><input type="number" id="steppedIndent" value="14" onchange="updateAll()" class="w-16 p-1 border rounded"></div></td></tr>
                         <tr><td>Matrix Subtotals</td><td><div class="flex gap-4"><label><input type="checkbox" id="rowSubtotals" onchange="updateAll()" checked> Row Subtotals</label> <label><input type="checkbox" id="colSubtotals" onchange="updateAll()" checked> Column Subtotals</label></div></td></tr>
                     </table>
@@ -278,7 +278,6 @@ function setModeDefaults() {
     document.getElementById('slicerHoverColor').value = slHover;
     document.getElementById('slicerSelectedColor').value = slSelect;
     document.getElementById('slicerSliderColor').value = slSlider;
-    document.getElementById('contrastTextColor').value = "#FFFFFF";
 
     if (document.getElementById('autoSync') && document.getElementById('autoSync').checked) {
         syncThemeFromAccent();
@@ -356,7 +355,6 @@ function updateAll() {
     const pageBgHex = document.getElementById('pageBg').value;
     const fg = document.getElementById('pageFg').value;
     const brdColor = document.getElementById('borderColor').value;
-    const contrastText = document.getElementById('contrastTextColor').value;
 
     document.body.style.backgroundColor = pageBgHex;
     document.getElementById('canvas').style.backgroundColor = bgHex;
@@ -381,9 +379,9 @@ function updateAll() {
     const gridEnabled = document.getElementById('showGrid').checked;
 
     const hBg = hCon ? primary : tableBg;
-    const hTxt = hCon ? contrastText : tableFg;
+    const hTxt = hCon ? bgHex : tableFg;
     const tBg = tCon ? primary : tableBg;
-    const tTxt = tCon ? contrastText : tableFg;
+    const tTxt = tCon ? bgHex : tableFg;
 
     document.getElementById('tableHead').style.background = hBg;
     document.getElementById('tableHead').style.color = hTxt;
@@ -464,20 +462,19 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
         "gridLineThickness": 1
     }];
 
-    const contrastText = document.getElementById('contrastTextColor').value;
     const hBg = solid(hCon ? primary : tableBg);
-    const hTxt = solid(hCon ? contrastText : tableFg);
+    const hTxt = solid(hCon ? bg : tableFg);
     
     // Table Totals Logic (Fixed)
     const tBg = solid(tCon ? primary : tableBg);
-    const tTxt = solid(tCon ? contrastText : tableFg);
+    const tTxt = solid(tCon ? bg : tableFg);
     
     // Slicer Header Logic
     const sBg = solid(sCon ? primary : bg);
     const sTxt = solid(sCon ? "#FFFFFF" : fg);
     
     const rowPri = solid(tableBg);
-    const rowSec = banded ? solid(tableBanded) : rowPri;
+    const rowSec = banded ? solid(tableBanded) : solid(tableBg);
 
     // Read Slicer & Status Inputs
     const slHover = document.getElementById('slicerHoverColor').value;
@@ -607,7 +604,7 @@ function initPalettes() {
     }
 }
 
-window.onload = () => { initPalettes(); setModeDefaults(); };
+window.onload = () => { initPalettes(); setModeDefaults(); setTimeout(updateAll, 200); };
 
 function downloadJSON() {
     try {
