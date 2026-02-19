@@ -97,7 +97,7 @@
                         <tr><th colspan="2" class="bg-slate-100 p-2 text-blue-800">Table & Matrix Settings</th></tr>
                         <tr><td>Grid</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="showGrid" onchange="updateAll()" checked> Show Lines</label> <span>Padding:</span><input type="number" id="gridPadding" value="2" onchange="updateAll()" class="w-16 p-1 border rounded"> <span>Text Size:</span><input type="number" id="gridTextSize" value="10" onchange="updateAll()" class="w-16 p-1 border rounded"></div></td></tr>
                         <tr><td>Table Options</td><td><div class="flex gap-4"><label><input type="checkbox" id="bandedRows" onchange="updateAll()" checked> Banded Rows</label> <label><input type="checkbox" id="urlIcon" onchange="updateAll()" checked> URL Icon</label> <label><input type="checkbox" id="wordWrap" onchange="updateAll()" checked> Word Wrap</label> <label><input type="checkbox" id="autoSizeCol" onchange="updateAll()" checked> Auto Size</label></div></td></tr>
-                        <tr><td>Row Colors</td><td><div class="flex items-center gap-4"><span>Bg:</span><input type="color" id="tableBg" value="#FFFFFF" onchange="updateAll()" class="color-input-ui w-6 h-6"> <span>Text:</span><input type="color" id="tableFg" value="#2C3E50" onchange="updateAll()" class="color-input-ui w-6 h-6"> <span>Banded:</span><input type="color" id="tableBanded" value="#F0F2F5" onchange="updateAll()" class="color-input-ui w-6 h-6"></div></td></tr>
+                        <tr><td>Row Colors</td><td><div class="flex items-center gap-4"><span>Bg:</span><input type="color" id="tableBg" value="#F8FAFC" onchange="updateAll()" class="color-input-ui w-6 h-6"> <span>Text:</span><input type="color" id="tableFg" value="#2C3E50" onchange="updateAll()" class="color-input-ui w-6 h-6"> <span>Banded:</span><input type="color" id="tableBanded" value="#F1F5F9" onchange="updateAll()" class="color-input-ui w-6 h-6"></div></td></tr>
                         <tr><td>Contrast</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="headerContrast" onchange="updateAll()"> Headers</label><label><input type="checkbox" id="totalContrast" onchange="updateAll()"> Totals</label></div></td></tr>
                         <tr><td>Matrix Layout</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="steppedLayout" onchange="updateAll()" checked> Stepped</label> <span>Indent:</span><input type="number" id="steppedIndent" value="14" onchange="updateAll()" class="w-16 p-1 border rounded"></div></td></tr>
                         <tr><td>Matrix Subtotals</td><td><div class="flex gap-4"><label><input type="checkbox" id="rowSubtotals" onchange="updateAll()" checked> Row Subtotals</label> <label><input type="checkbox" id="colSubtotals" onchange="updateAll()" checked> Column Subtotals</label></div></td></tr>
@@ -358,6 +358,7 @@ function updateAll() {
 
     document.body.style.backgroundColor = pageBgHex;
     document.getElementById('canvas').style.backgroundColor = bgHex;
+    document.getElementById('canvas').style.color = fg;
 
     const opt = { 
         textStyle: { color: fg, fontFamily: font }, 
@@ -371,6 +372,7 @@ function updateAll() {
     if (chartsInstance.pie) chartsInstance.pie.setOption({...opt, xAxis: null, yAxis: null, series: [{type: 'pie', radius: '60%', data: [{value: 30, name: 'Audit'}, {value: 25, name: 'Tax'}, {value: 20, name: 'Legal'}, {value: 15, name: 'HR'}, {value: 10, name: 'IT'}, {value: 8, name: 'Ops'}, {value: 5, name: 'Mkt'}, {value: 3, name: 'R&D'}]}]});
 
     const tableBg = document.getElementById('tableBg').value;
+    const tableFg = document.getElementById('tableFg').value;
     const tableBanded = document.getElementById('tableBanded').value;
 
     const hCon = document.getElementById('headerContrast').checked;
