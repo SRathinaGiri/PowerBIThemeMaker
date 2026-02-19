@@ -285,16 +285,34 @@ function syncThemeFromAccent() {
     const isDark = document.getElementById('baseMode').value === 'dark';
     const accent = document.getElementById('primaryColor').value;
 
-    let bg, fg;
+    let bg, fg, banded, grid, border;
     if (isDark) {
         bg = adjustBrightness(accent, -90);
         fg = adjustBrightness(accent, 90);
+        banded = adjustBrightness(bg, 5);
+        grid = adjustBrightness(bg, 15);
+        border = adjustBrightness(bg, 20);
     } else {
         bg = adjustBrightness(accent, 95);
         fg = adjustBrightness(accent, -80);
+        banded = adjustBrightness(bg, -5);
+        grid = adjustBrightness(bg, -10);
+        border = adjustBrightness(bg, -15);
     }
     document.getElementById('pageBg').value = bg;
     document.getElementById('pageFg').value = fg;
+
+    document.getElementById('tableBg').value = bg;
+    document.getElementById('tableFg').value = fg;
+    document.getElementById('tableBanded').value = banded;
+
+    if(document.getElementById('chartLabelsColor')) document.getElementById('chartLabelsColor').value = fg;
+    if(document.getElementById('xAxisLabelColor')) document.getElementById('xAxisLabelColor').value = fg;
+    if(document.getElementById('yAxisLabelColor')) document.getElementById('yAxisLabelColor').value = fg;
+
+    if(document.getElementById('borderColor')) document.getElementById('borderColor').value = border;
+    if(document.getElementById('xAxisGridColor')) document.getElementById('xAxisGridColor').value = grid;
+    if(document.getElementById('yAxisGridColor')) document.getElementById('yAxisGridColor').value = grid;
 }
 
 function updateAll() {
@@ -462,8 +480,8 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
             "matrix": { "*": {
                 "grid": [{ "rowPadding": gridPadding, "textSize": textSize, "gridVertical": grid, "gridHorizontal": grid }],
                 "columnHeaders": [{ "fontColor": hTxt, "backColor": hBg, "fontFace": font, "textSize": textSize, "alignment": "Left", "wordWrap": wordWrap }],
-                "rowHeaders": [{ "fontColor": hTxt, "backColor": hBg, "stepped": stepped, "steppedLayoutIndentation": steppedIndent, "showExpandCollapseButtons": true, "expandCollapseButtonsColor": solid(fg), "fontFamily": font, "fontSize": textSize-1 }],
-                "values": [{ "fontFamily": font, "fontSize": textSize-1, "fontColorPrimary": solid(tableFg), "backColorPrimary": rowPri, "fontColorSecondary": solid(tableFg), "backColorSecondary": rowSec, "bandedRowHeaders": true, "urlIcon": urlIcon, "wordWrap": wordWrap }],
+                "rowHeaders": [{ "fontColor": solid(tableFg), "backColor": rowPri, "stepped": stepped, "steppedLayoutIndentation": steppedIndent, "showExpandCollapseButtons": true, "expandCollapseButtonsColor": solid(fg), "fontFamily": font, "fontSize": textSize-1 }],
+                "values": [{ "fontFamily": font, "fontSize": textSize-1, "fontColorPrimary": solid(tableFg), "backColorPrimary": rowPri, "fontColorSecondary": solid(tableFg), "backColorSecondary": rowSec, "bandedRowHeaders": banded, "urlIcon": urlIcon, "wordWrap": wordWrap }],
                 "subTotals": [{ "rowSubTotals": rowSub, "columnSubTotals": colSub, "fontColor": hTxt, "backColor": solid(dark ? "#2D3748" : "#E1E6EE"), "applyToHeaders": false, "fontFamily": font, "fontSize": textSize, "rowSubTotalPosition": "Bottom" }],
                 "rowTotal": [{ "fontColor": tTxt, "backColor": tBg, "fontSize": textSize+1 }],
                 "columnTotal": [{ "fontColor": tTxt, "backColor": tBg, "fontSize": textSize+1 }],
