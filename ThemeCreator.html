@@ -360,6 +360,13 @@ function updateAll() {
     document.getElementById('canvas').style.backgroundColor = bgHex;
     document.getElementById('canvas').style.color = fg;
 
+    // Fix Chart Containers in Dark Mode
+    document.querySelectorAll('.chart-container').forEach(c => {
+        c.style.backgroundColor = bgHex;
+        c.parentElement.style.backgroundColor = bgHex;
+        c.parentElement.style.borderColor = brdColor;
+    });
+
     const opt = { 
         textStyle: { color: fg, fontFamily: font }, 
         color: palette, 
