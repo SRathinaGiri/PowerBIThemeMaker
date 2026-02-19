@@ -98,7 +98,7 @@
                         <tr><td>Grid</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="showGrid" onchange="updateAll()" checked> Show Lines</label> <span>Padding:</span><input type="number" id="gridPadding" value="2" onchange="updateAll()" class="w-16 p-1 border rounded"> <span>Text Size:</span><input type="number" id="gridTextSize" value="10" onchange="updateAll()" class="w-16 p-1 border rounded"></div></td></tr>
                         <tr><td>Table Options</td><td><div class="flex gap-4"><label><input type="checkbox" id="bandedRows" onchange="updateAll()" checked> Banded Rows</label> <label><input type="checkbox" id="urlIcon" onchange="updateAll()" checked> URL Icon</label> <label><input type="checkbox" id="wordWrap" onchange="updateAll()" checked> Word Wrap</label> <label><input type="checkbox" id="autoSizeCol" onchange="updateAll()" checked> Auto Size</label></div></td></tr>
                         <tr><td>Row Colors</td><td><div class="flex items-center gap-4"><span>Bg:</span><input type="color" id="tableBg" value="#FFFFFF" onchange="updateAll()" class="color-input-ui w-6 h-6"> <span>Text:</span><input type="color" id="tableFg" value="#2C3E50" onchange="updateAll()" class="color-input-ui w-6 h-6"> <span>Banded:</span><input type="color" id="tableBanded" value="#F0F2F5" onchange="updateAll()" class="color-input-ui w-6 h-6"></div></td></tr>
-                        <tr><td>Contrast</td><td><div class="flex gap-4"><label><input type="checkbox" id="headerContrast" onchange="updateAll()"> Headers</label><label><input type="checkbox" id="totalContrast" onchange="updateAll()"> Totals</label></div></td></tr>
+                        <tr><td>Contrast</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="headerContrast" onchange="updateAll()"> Headers</label><label><input type="checkbox" id="totalContrast" onchange="updateAll()"> Totals</label> <span>Text:</span><input type="color" id="contrastTextColor" value="#FFFFFF" onchange="updateAll()" class="color-input-ui w-6 h-6" title="Contrast Text Color"></div></td></tr>
                         <tr><td>Matrix Layout</td><td><div class="flex items-center gap-4"><label><input type="checkbox" id="steppedLayout" onchange="updateAll()" checked> Stepped</label> <span>Indent:</span><input type="number" id="steppedIndent" value="14" onchange="updateAll()" class="w-16 p-1 border rounded"></div></td></tr>
                         <tr><td>Matrix Subtotals</td><td><div class="flex gap-4"><label><input type="checkbox" id="rowSubtotals" onchange="updateAll()" checked> Row Subtotals</label> <label><input type="checkbox" id="colSubtotals" onchange="updateAll()" checked> Column Subtotals</label></div></td></tr>
                     </table>
@@ -106,6 +106,7 @@
                     <table class="config-table">
                         <tr><th colspan="2" class="bg-slate-100 p-2 text-blue-800">Slicer Settings</th></tr>
                         <tr><td>Header Style</td><td><label><input type="checkbox" id="slicerHeaderContrast" onchange="updateAll()"> Contrast Header</label></td></tr>
+                        <tr><td>Item Colors</td><td><div class="flex items-center gap-4"><span>Hover:</span><input type="color" id="slicerHoverColor" value="#F2F5FA" onchange="updateAll()" class="color-input-ui w-6 h-6"> <span>Selected:</span><input type="color" id="slicerSelectedColor" value="#DDE7FF" onchange="updateAll()" class="color-input-ui w-6 h-6"> <span>Slider:</span><input type="color" id="slicerSliderColor" value="#E2E8F0" onchange="updateAll()" class="color-input-ui w-6 h-6"></div></td></tr>
                     </table>
 
                     <table class="config-table">
@@ -257,17 +258,27 @@ function setModeDefaults() {
     const primary = document.getElementById('primaryColor').value;
     const r = parseInt(primary.slice(1,3), 16), g = parseInt(primary.slice(3,5), 16), b = parseInt(primary.slice(5,7), 16);
 
+    // Calculate structural defaults based on mode/primary
     const bg = isDark ? "#121214" : rgbaToHex(r, g, b, 0.04);
     const fg = isDark ? "#E2E8F0" : "#2C3E50";
-    const banded = isDark ? "#252528" : "#F0F2F5";
 
-    const borderColor = isDark ? "#333333" : "#E5EAF0";
+    // Derive other colors from bg to ensure consistency (no hardcoded hexes)
+    const banded = isDark ? adjustBrightness(bg, 5) : adjustBrightness(bg, -5);
+    const borderColor = isDark ? adjustBrightness(bg, 15) : adjustBrightness(bg, -10);
 
-    // Default Table BG/FG to Page BG/FG (Theme Colors) instead of hardcoded White/Black
+    const slHover = isDark ? adjustBrightness(bg, 10) : adjustBrightness(bg, -3);
+    const slSelect = isDark ? adjustBrightness(bg, 20) : rgbaToHex(r, g, b, 0.15);
+    const slSlider = isDark ? adjustBrightness(bg, 15) : adjustBrightness(bg, -10);
+
     document.getElementById('tableBg').value = bg;
     document.getElementById('tableFg').value = fg;
     document.getElementById('tableBanded').value = banded;
     document.getElementById('borderColor').value = borderColor;
+
+    document.getElementById('slicerHoverColor').value = slHover;
+    document.getElementById('slicerSelectedColor').value = slSelect;
+    document.getElementById('slicerSliderColor').value = slSlider;
+    document.getElementById('contrastTextColor').value = "#FFFFFF";
 
     if (document.getElementById('autoSync') && document.getElementById('autoSync').checked) {
         syncThemeFromAccent();
@@ -286,20 +297,25 @@ function syncThemeFromAccent() {
     const accent = document.getElementById('primaryColor').value;
     const r = parseInt(accent.slice(1,3), 16), g = parseInt(accent.slice(3,5), 16), b = parseInt(accent.slice(5,7), 16);
 
-    let bg, fg, banded, grid, border;
+    let bg, fg, banded, grid, border, slHover, slSelect, slSlider;
     if (isDark) {
         bg = adjustBrightness(accent, -90);
         fg = adjustBrightness(accent, 90);
         banded = adjustBrightness(bg, 5);
         grid = adjustBrightness(bg, 15);
         border = adjustBrightness(bg, 20);
+        slHover = adjustBrightness(bg, 10);
+        slSelect = adjustBrightness(bg, 20);
+        slSlider = adjustBrightness(bg, 15);
     } else {
-        // Use rgbaToHex for Light BG to ensure tint (avoid pure white from saturation)
         bg = rgbaToHex(r, g, b, 0.04);
         fg = adjustBrightness(accent, -80);
         banded = adjustBrightness(bg, -5);
         grid = adjustBrightness(bg, -10);
         border = adjustBrightness(bg, -15);
+        slHover = adjustBrightness(bg, -3);
+        slSelect = rgbaToHex(r, g, b, 0.15);
+        slSlider = adjustBrightness(bg, -10);
     }
     document.getElementById('pageBg').value = bg;
     document.getElementById('pageFg').value = fg;
@@ -307,6 +323,10 @@ function syncThemeFromAccent() {
     document.getElementById('tableBg').value = bg;
     document.getElementById('tableFg').value = fg;
     document.getElementById('tableBanded').value = banded;
+
+    document.getElementById('slicerHoverColor').value = slHover;
+    document.getElementById('slicerSelectedColor').value = slSelect;
+    document.getElementById('slicerSliderColor').value = slSlider;
 
     if(document.getElementById('chartLabelsColor')) document.getElementById('chartLabelsColor').value = fg;
     if(document.getElementById('xAxisLabelColor')) document.getElementById('xAxisLabelColor').value = fg;
@@ -326,15 +346,17 @@ function updateAll() {
     if (lineEl && !chartsInstance.line) chartsInstance.line = echarts.init(lineEl);
     if (pieEl && !chartsInstance.pie) chartsInstance.pie = echarts.init(pieEl);
 
-    const isDark = document.getElementById('baseMode').value === 'dark';
+    // Inputs
     const primary = document.getElementById('primaryColor').value;
     const font = document.getElementById('masterFont').value;
     const palette = (customColors.length > 0) ? customColors : [primary, ...palettes[selectedIdx].colors.slice(1, 8)];
     
-    const r = parseInt(primary.slice(1,3), 16), g = parseInt(primary.slice(3,5), 16), b = parseInt(primary.slice(5,7), 16);
-    const bgHex = isDark ? "#121214" : rgbaToHex(r, g, b, 0.04);
-    const pageBgHex = isDark ? "#0A0A0C" : rgbaToHex(r, g, b, 0.12);
-    const fg = isDark ? "#E2E8F0" : "#2C3E50";
+    // Structural Colors from Inputs
+    const bgHex = document.getElementById('tableBg').value;
+    const pageBgHex = document.getElementById('pageBg').value;
+    const fg = document.getElementById('pageFg').value;
+    const brdColor = document.getElementById('borderColor').value;
+    const contrastText = document.getElementById('contrastTextColor').value;
 
     document.body.style.backgroundColor = pageBgHex;
     document.getElementById('canvas').style.backgroundColor = bgHex;
@@ -359,9 +381,9 @@ function updateAll() {
     const gridEnabled = document.getElementById('showGrid').checked;
 
     const hBg = hCon ? primary : tableBg;
-    const hTxt = hCon ? "#FFFFFF" : tableFg;
+    const hTxt = hCon ? contrastText : tableFg;
     const tBg = tCon ? primary : tableBg;
-    const tTxt = tCon ? "#FFFFFF" : tableFg;
+    const tTxt = tCon ? contrastText : tableFg;
 
     document.getElementById('tableHead').style.background = hBg;
     document.getElementById('tableHead').style.color = hTxt;
@@ -374,12 +396,12 @@ function updateAll() {
     document.querySelector('#previewTable tbody tr:nth-child(2)').style.background = rowSecBg;
 
     document.querySelectorAll('#previewTable th, #previewTable td').forEach(e => {
-        e.style.borderColor = gridEnabled ? (isDark ? "#333" : "#e2e8f0") : "transparent";
+        e.style.borderColor = gridEnabled ? brdColor : "transparent";
         e.style.fontFamily = font;
     });
 
     renderInspector(palette);
-    const fullJson = buildTheme(palette, bgHex, fg, isDark, primary, font);
+    const fullJson = buildTheme(palette, bgHex, fg, null, primary, font);
     document.getElementById('jsonOut').innerText = JSON.stringify(fullJson, null, 4);
 }
 
@@ -442,14 +464,13 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
         "gridLineThickness": 1
     }];
 
+    const contrastText = document.getElementById('contrastTextColor').value;
     const hBg = solid(hCon ? primary : tableBg);
-    const hTxt = solid(hCon ? "#FFFFFF" : tableFg);
+    const hTxt = solid(hCon ? contrastText : tableFg);
     
     // Table Totals Logic (Fixed)
-    // If tCon is true (Contrast), use Primary Background + White Text.
-    // If tCon is false (Standard), use Default Background (White/Dark) + Foreground Text.
     const tBg = solid(tCon ? primary : tableBg);
-    const tTxt = solid(tCon ? "#FFFFFF" : tableFg);
+    const tTxt = solid(tCon ? contrastText : tableFg);
     
     // Slicer Header Logic
     const sBg = solid(sCon ? primary : bg);
@@ -458,6 +479,15 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
     const rowPri = solid(tableBg);
     const rowSec = banded ? solid(tableBanded) : rowPri;
 
+    // Read Slicer & Status Inputs
+    const slHover = document.getElementById('slicerHoverColor').value;
+    const slSelect = document.getElementById('slicerSelectedColor').value;
+    const slSlider = document.getElementById('slicerSliderColor').value;
+
+    const good = document.getElementById('statusGood').value;
+    const neutral = document.getElementById('statusNeutral').value;
+    const bad = document.getElementById('statusBad').value;
+
     // FULL 14KB+ SCHEMA (Exact match to LightTheme01.json structure)
     return {
         "name": document.getElementById('clientName').value || "Finance BI Master Theme v3e",
@@ -465,7 +495,7 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
         "tableAccent": primary,
         "background": bg,
         "foreground": fg,
-        "good": statusCols.good, "neutral": statusCols.neutral, "bad": statusCols.bad,
+        "good": good, "neutral": neutral, "bad": bad,
         "visualStyles": {
             "*": { "*": {
                 "title": [{ "show": false }],
@@ -491,10 +521,10 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
             }},
             "slicer": { "*": {
                 "header": [{ "show": true, "fontColor": sTxt, "background": sBg, "outline": "None", "textSize": 11, "fontFamily": font }],
-                "items": [{ "fontColor": solid(fg), "backgroundColor": rowPri, "hoverColor": solid(dark ? "#333" : "#F2F5FA"), "selectedColor": solid(dark ? "#444" : "#DDE7FF"), "outline": "None", "textSize": 10, "fontFamily": font }],
+                "items": [{ "fontColor": solid(fg), "backgroundColor": rowPri, "hoverColor": solid(slHover), "selectedColor": solid(slSelect), "outline": "None", "textSize": 10, "fontFamily": font }],
                 "numericInputStyle": [{ "fontColor": solid(fg), "background": rowPri, "outline": "None", "textSize": 10, "fontFamily": font }],
                 "date": [{ "fontColor": solid(fg), "background": rowPri, "textSize": 10, "fontFamily": font }],
-                "slider": [{ "show": true, "background": solid(dark ? "#333" : "#E2E8F0") }],
+                "slider": [{ "show": true, "background": solid(slSlider) }],
                 "background": [{ "show": true, "color": solid(bg), "transparency": 0 }],
                 "general": [{ "outlineColor": solid(primary), "outlineWeight": 1, "responsive": false }]
             }},
@@ -503,7 +533,7 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
                 "fillCustom": [{ "$id": "default", "fillColor": rowPri }],
                 "value": [{ "$id": "default", "textWrap": true, "color": solid(fg) }],
                 "outline": [{ "$id": "default", "lineColor": solid(primary), "transparency": 20 }],
-                "states": [{ "selectedColor": solid(dark ? "#444" : "#DDE7FF"), "hoverColor": solid(dark ? "#333" : "#F2F5FA") }]
+                "states": [{ "selectedColor": solid(slSelect), "hoverColor": solid(slHover) }]
             }},
             "barChart": { "*": { "legend": [{ "show": legShow, "position": legPos }], "labels": [{ "show": lblShow, "labelPosition": lblPos, "fontSize": 9, "fontFamily": font, "color": solid(lblCol) }], "categoryAxis": catAx, "valueAxis": valAx, "series": [{ "colors": pal }] }},
             "clusteredBarChart": { "*": { "legend": [{ "show": legShow }], "labels": [{ "show": lblShow, "labelPosition": lblPos, "fontSize": 9, "fontFamily": font, "color": solid(lblCol) }], "categoryAxis": catAx, "valueAxis": valAx, "series": [{ "colors": pal }] }},
