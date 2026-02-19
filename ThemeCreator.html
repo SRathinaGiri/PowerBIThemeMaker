@@ -356,10 +356,10 @@ function updateAll() {
     const isBanded = document.getElementById('bandedRows').checked;
     const gridEnabled = document.getElementById('showGrid').checked;
 
-    const hBg = hCon ? primary : (isDark ? "#2D3748" : "#E8ECF2");
-    const hTxt = hCon ? "#FFFFFF" : (isDark ? "#FFFFFF" : "#273444");
-    const tBg = tCon ? primary : (isDark ? "#1E1E22" : "#FFFFFF");
-    const tTxt = tCon ? "#FFFFFF" : fg;
+    const hBg = hCon ? primary : tableBg;
+    const hTxt = hCon ? "#FFFFFF" : tableFg;
+    const tBg = tCon ? primary : tableBg;
+    const tTxt = tCon ? "#FFFFFF" : tableFg;
 
     document.getElementById('tableHead').style.background = hBg;
     document.getElementById('tableHead').style.color = hTxt;
@@ -440,14 +440,14 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
         "gridLineThickness": 1
     }];
 
-    const hBg = solid(hCon ? primary : (dark ? "#2D3748" : "#E8ECF2"));
-    const hTxt = solid(hCon ? "#FFFFFF" : (dark ? "#FFFFFF" : "#273444"));
+    const hBg = solid(hCon ? primary : tableBg);
+    const hTxt = solid(hCon ? "#FFFFFF" : tableFg);
     
     // Table Totals Logic (Fixed)
     // If tCon is true (Contrast), use Primary Background + White Text.
     // If tCon is false (Standard), use Default Background (White/Dark) + Foreground Text.
-    const tBg = solid(tCon ? primary : (dark ? "#2D3748" : "#FFFFFF"));
-    const tTxt = solid(tCon ? "#FFFFFF" : fg);
+    const tBg = solid(tCon ? primary : tableBg);
+    const tTxt = solid(tCon ? "#FFFFFF" : tableFg);
     
     // Slicer Header Logic
     const sBg = solid(sCon ? primary : bg);
@@ -482,7 +482,7 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
                 "columnHeaders": [{ "fontColor": hTxt, "backColor": hBg, "fontFace": font, "textSize": textSize, "alignment": "Left", "wordWrap": wordWrap }],
                 "rowHeaders": [{ "fontColor": solid(tableFg), "backColor": rowPri, "stepped": stepped, "steppedLayoutIndentation": steppedIndent, "showExpandCollapseButtons": true, "expandCollapseButtonsColor": solid(fg), "fontFamily": font, "fontSize": textSize-1 }],
                 "values": [{ "fontFamily": font, "fontSize": textSize-1, "fontColorPrimary": solid(tableFg), "backColorPrimary": rowPri, "fontColorSecondary": solid(tableFg), "backColorSecondary": rowSec, "bandedRowHeaders": banded, "urlIcon": urlIcon, "wordWrap": wordWrap }],
-                "subTotals": [{ "rowSubTotals": rowSub, "columnSubTotals": colSub, "fontColor": hTxt, "backColor": solid(dark ? "#2D3748" : "#E1E6EE"), "applyToHeaders": false, "fontFamily": font, "fontSize": textSize, "rowSubTotalPosition": "Bottom" }],
+                "subTotals": [{ "rowSubTotals": rowSub, "columnSubTotals": colSub, "fontColor": tTxt, "backColor": tBg, "applyToHeaders": false, "fontFamily": font, "fontSize": textSize, "rowSubTotalPosition": "Bottom" }],
                 "rowTotal": [{ "fontColor": tTxt, "backColor": tBg, "fontSize": textSize+1 }],
                 "columnTotal": [{ "fontColor": tTxt, "backColor": tBg, "fontSize": textSize+1 }],
                 "total": [{ "totals": true, "fontColor": tTxt, "backColor": tBg, "fontFamily": font, "fontSize": textSize+1 }]
