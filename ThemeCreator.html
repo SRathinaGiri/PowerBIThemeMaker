@@ -633,7 +633,7 @@ function initPalettes() {
                 initPalettes();
             };
 
-            btn.innerHTML = `<div class="flex h-3 mb-1 overflow-hidden rounded">${p.colors.slice(0,4).map(c=>`<div class="flex-1" style="background:${c}"></div>`).join('')}</div><span class="text-[8px] uppercase font-bold">${p.name}</span>`;
+            btn.innerHTML = `<div class="flex h-3 mb-1 overflow-hidden rounded">${p.colors.slice(0,8).map(c=>`<div class="flex-1" style="background:${c}"></div>`).join('')}</div><span class="text-[8px] uppercase font-bold">${p.name}</span>`;
 
             grid.appendChild(btn);
             globalIdx++;
