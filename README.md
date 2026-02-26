@@ -26,6 +26,20 @@ The tool focuses on consistency, accessibility, and ease of use, providing autom
 - **JSON Export**: One-click generation of a validated JSON file ready for Power BI.
 - **Single-File Architecture**: No installation required; runs entirely in the browser.
 
+## Screenshots
+
+### Live Dashboard (Preview)
+Visualizes the theme on sample charts and tables.
+![Live Dashboard](screenshots/preview_page.png)
+
+### Global & Palettes (Main)
+Set the base mode, accent color, and choose from a variety of palettes.
+![Global Settings](screenshots/main_page.png)
+
+### JSON View
+Inspect and copy the generated JSON code.
+![JSON Output](screenshots/json_page.png)
+
 ## Usage
 
 1.  **Open the Application**: Simply open the `ThemeCreator.html` file in any modern web browser (Chrome, Edge, Firefox, Safari).
