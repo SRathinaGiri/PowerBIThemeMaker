@@ -71,3 +71,9 @@ Displays the raw JSON output. This is useful for debugging or manually copying s
 ## License
 
 This project is open-source and available for personal and commercial use.
+
+## Author
+
+Created by S. Rathinagiri.
+
+[View on GitHub](https://github.com/SRathinaGiri/PowerBIThemeMaker)
