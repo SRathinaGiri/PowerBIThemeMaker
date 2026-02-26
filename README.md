@@ -1,10 +1,10 @@
-# Finance BI Master Theme Pro
+# Power BI Theme Maker
 
 A single-file HTML application for generating, customizing, and validating Power BI JSON themes.
 
 ## Description
 
-The **Finance BI Master Theme Pro** is a powerful utility designed to streamline the creation of professional Power BI themes. It allows users to visually design themes, preview them in real-time, and export the resulting JSON configuration for direct import into Power BI.
+The **Power BI Theme Maker** is a powerful utility designed to streamline the creation of professional Power BI themes. It allows users to visually design themes, preview them in real-time, and export the resulting JSON configuration for direct import into Power BI.
 
 The tool focuses on consistency, accessibility, and ease of use, providing automatic color calculations for light and dark modes, ensuring optimal contrast and visual harmony across all report elements.
 

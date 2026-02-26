@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Finance BI Master Theme Pro - Validated</title>
+    <title>Power BI Theme Maker - Validated</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <style>
@@ -22,8 +22,8 @@
         
         <div class="bg-slate-900 text-white p-6 flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-black text-blue-400">Finance BI <span class="text-white font-light">Theme Master</span></h1>
-                <input type="text" id="clientName" value="Finance BI – Master Visual Palettes (Light) – v3e" class="bg-slate-800 border-none text-white text-xs w-80 mt-2 p-2 rounded">
+                <h1 class="text-xl font-black text-blue-400">Power BI <span class="text-white font-light">Theme Maker</span></h1>
+                <input type="text" id="clientName" value="Power BI Theme Maker – Master Visual Palettes (Light) – v3e" class="bg-slate-800 border-none text-white text-xs w-80 mt-2 p-2 rounded">
             </div>
             <div class="flex gap-3">
                 <button onclick="updateAll()" class="bg-slate-700 hover:bg-slate-600 px-4 py-3 rounded-lg font-bold text-white transition-all">Render Preview</button>
@@ -530,7 +530,7 @@ function buildTheme(pal, bg, fg, dark, primary, font) {
 
     // FULL 14KB+ SCHEMA (Exact match to LightTheme01.json structure)
     return {
-        "name": document.getElementById('clientName').value || "Finance BI Master Theme v3e",
+        "name": document.getElementById('clientName').value || "Power BI Theme Maker v3e",
         "dataColors": pal,
         "tableAccent": primary,
         "background": bg,
@@ -656,7 +656,7 @@ function downloadJSON() {
         const data = JSON.stringify(obj, null, 4);
         const blob = new Blob([data], {type: "application/json"});
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-        a.download = `FinanceBI_Master_Validated.json`; a.click();
+        a.download = `PowerBIThemeMaker_Validated.json`; a.click();
     } catch(e) {
         alert("Error generating JSON");
     }
