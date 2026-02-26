@@ -42,7 +42,7 @@ Inspect and copy the generated JSON code.
 
 ## Usage
 
-1.  **Open the Application**: Simply open the `ThemeCreator.html` file in any modern web browser (Chrome, Edge, Firefox, Safari).
+1.  **Open the Application**: Simply open the `PowerBI Theme Maker.html` file in any modern web browser (Chrome, Edge, Firefox, Safari).
 2.  **Navigate Tabs**: Use the navigation tabs to access different sections of the tool.
     -   **Live Dashboard**: View the current theme applied to sample visuals.
     -   **Global & Palettes**: Set the base mode (Light/Dark), primary accent color, page background, and choose a data color palette.
