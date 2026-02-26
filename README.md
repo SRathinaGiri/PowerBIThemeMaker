@@ -1,4 +1,4 @@
-# Finance BI Master Theme Pro
+# Power BI Theme Maker
 
 A single-file HTML application for generating, customizing, and validating Power BI JSON themes.
 
